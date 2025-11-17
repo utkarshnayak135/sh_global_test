@@ -1,0 +1,15 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "vpc:*",
+                "s3:*",
+                "apigateway:*",
+                "sqs:*"
+            ],
+            "Resource": "*"
+        }
+    ]
+}

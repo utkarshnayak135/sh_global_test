@@ -58,3 +58,52 @@ module "route53" {
   app_load_balancer_dns_name = "placeholder-lb.eu-west-1.elb.amazonaws.com"
   app_load_balancer_zone_id  = "Z32O12XQLNTSW2" # Placeholder for eu-west-1 ELB zone ID
 }
+
+module "iam_policy" {
+  source = "../../modules/iam/iam_policy"
+
+  managed_policies = {
+    admin_dev = "arn:aws:iam::aws:policy/AdministartorAccess"
+  }
+  
+  custom_policies = {
+    devops_dev = "devops_dev_policy.json"
+    developer_dev = "developer_dev_policy.json"
+  }
+}
+
+module "iam_role" {
+  source = "../../modules/iam/iam_role"
+
+  roles = {
+    admin_dev = {
+      policy_arn = module.iam_policy.policy_arns["admin_dev"]
+    }
+    devops_dev = {
+      policy_arn = module.iam_policy.policy_arns["devops_dev"]
+    }
+    developer_dev = {
+      policy_arn = module.iam_policy.policy_arns["developer_dev"]
+    }
+  }
+  
+}
+
+module "iam_group" {
+  source = "../../modules/iam/iam_group"
+
+  groups = {
+    admin_dev = {
+      policy_arn = module.iam_policy.policy_arns["admin_dev"]
+      role_arn = module.iam_role.role_arns["admin_dev"]
+    }
+    devops_dev = {
+      policy_arn = module.iam_policy.policy_arns["devops_dev"]
+      role_arn = module.iam_role.role_arns["devops_dev"]
+    }
+    developer_dev = {
+      policy_arn = module.iam_policy.policy_arns["developer_dev"]
+      role_arn = module.iam_role.role_arns["developer_dev"]
+    }
+  }
+}
